@@ -6,6 +6,8 @@ const Mail = require("./mail");
 app.use(express.json());
 const fs = require("fs");
 const path = require("path");
+const {emailqueue}=require("./emailqueue")
+const {emailWorker}=require("./emailWorker")
 
 app.post("/mail", async (req, res) => {
   //   console.log(req.body);
@@ -19,7 +21,10 @@ app.post("/mail", async (req, res) => {
   mail.setHtml(fileLocation);
   mail.setCC("mk4539587@gmail.com")
   mail.setBCC("manojkumarp2705@gmail.com")
-  mail.send();
+  // mail.send();
+  await emailqueue.add("send email",mail)
+  console.log(mail);
+  
   res.send("Email sent!");
 });
 

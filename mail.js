@@ -1,4 +1,6 @@
 const nodemailer = require("nodemailer");
+const cron = require("node-cron");
+
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -7,7 +9,7 @@ const transporter = nodemailer.createTransport({
   port: 587,
   auth: {
     user: process.env.EMAIL,
-    pass: process.env.PASS,//
+    pass: process.env.PASS,
   },
 });
 
@@ -30,19 +32,19 @@ class Mail {
   }
 
   setTo(receiver) {
-    let receivers=this.mailOptions.to||[]
-    receivers.push(receiver)
+    let receivers = this.mailOptions.to || [];
+    receivers.push(receiver);
     this.mailOptions.to = receivers;
   }
 
-  setCC(cc){
-    let ccs=this.mailOptions.cc||[]
-    ccs.push(cc)
+  setCC(cc) {
+    let ccs = this.mailOptions.cc || [];
+    ccs.push(cc);
     this.mailOptions.cc = ccs;
   }
-  setBCC(bcc){
-    let bccs=this.mailOptions.bcc||[]
-    bccs.push(bcc)
+  setBCC(bcc) {
+    let bccs = this.mailOptions.bcc || [];
+    bccs.push(bcc);
     this.mailOptions.bcc = bccs;
   }
 
@@ -59,12 +61,16 @@ class Mail {
   }
 
   send() {
-    transporter.sendMail(this.mailOptions, (error, info) => {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("email sent successfully" + info.response);
-      }
+    cron.schedule("*/30 * * * * *", async () => {
+      console.log("sending every minute");
+
+      transporter.sendMail(this.mailOptions, (error, info) => {
+        if (error) {
+          console.log(error);
+        } else {
+          console.log("email sent successfully" + info.response);
+        }
+      });
     });
   }
 }
